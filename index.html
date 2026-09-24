@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>수능 카운트다운</title>
+  <!-- Ruffle: Flash 에뮬레이터 -->
+  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+</head>
+<body>
+  <div id="countdown" style="width:600px; max-width:100%; aspect-ratio:600/220;"></div>
+
+  <script>
+    window.addEventListener("load", () => {
+      const ruffle = window.RufflePlayer.newest();
+      const player = ruffle.createPlayer();
+      player.style.width = "100%";
+      player.style.height = "100%";
+      document.getElementById("countdown").appendChild(player);
+      player.load({
+        url: "2013AGM_V1_21_2_patched.swf",
+        autoplay: "on",
+        unmuteOverlay: "hidden",
+        letterbox: "off"
+      });
+    });
+  </script>
+</body>
+</html>
