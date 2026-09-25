@@ -3,27 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>수능 카운트다운</title>
-  <!-- Ruffle: Flash 에뮬레이터 -->
+  <meta name="description" content="아구몬 수능시계">
+  <title>아구몬 수능시계</title>
+  <style>
+    :root {
+      --bg-start: #fffaf0;
+      --bg-end: #f5f7ff;
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --text: #1f2a37;
+      --muted: #5a6475;
+      --border: rgba(138, 146, 175, 0.25);
+      --shadow: 0 20px 40px rgba(34, 45, 70, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+      font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--text);
+    }
+
+    .frame {
+      width: min(100%, 760px);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: clamp(16px, 2vw, 24px);
+      backdrop-filter: blur(8px);
+    }
+
+    .title {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      letter-spacing: -0.03em;
+    }
+
+    #countdown {
+      width: min(100%, 600px);
+      height: auto;
+      margin: 0 auto;
+      aspect-ratio: 600 / 220;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid rgba(17, 24, 39, 0.12);
+    }
+
+    .fallback {
+      display: none;
+      margin-top: 16px;
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: #fff3cd;
+      border: 1px solid #ffe69c;
+      color: #5b4a00;
+      text-align: center;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .fallback.visible {
+      display: block;
+    }
+  </style>
   <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 </head>
 <body>
-  <div id="countdown" style="width:600px; max-width:100%; aspect-ratio:600/220;"></div>
+  <main class="frame">
+    <h1 class="title">아구몬 수능시계</h1>
+    <div id="countdown" aria-label="수능 카운트다운"></div>
+    <div id="flash-fallback" class="fallback" role="alert">
+      Flash 애니메이션을 불러오지 못했습니다. 브라우저가 Ruffle을 지원하지 않거나 네트워크 연결이 원활하지 않을 수 있습니다.
+    </div>
+  </main>
 
   <script>
-    window.addEventListener("load", () => {
-      const ruffle = window.RufflePlayer.newest();
-      const player = ruffle.createPlayer();
-      player.style.width = "100%";
-      player.style.height = "100%";
-      document.getElementById("countdown").appendChild(player);
-      player.load({
-        url: "2013AGM_V1_21_2_patched.swf",
-        autoplay: "on",
-        unmuteOverlay: "hidden",
-        letterbox: "off"
-      });
-    });
+    const container = document.getElementById("countdown");
+    const fallback = document.getElementById("flash-fallback");
+
+    function showFallback() {
+      fallback.classList.add("visible");
+    }
+
+    function initFlash() {
+      if (!window.RufflePlayer || !window.RufflePlayer.newest) {
+        showFallback();
+        return;
+      }
+
+      try {
+        const ruffle = window.RufflePlayer.newest();
+        const player = ruffle.createPlayer();
+        player.style.width = "100%";
+        player.style.height = "100%";
+        player.setAttribute("aria-label", "수능 카운트다운 애니메이션");
+        container.appendChild(player);
+
+        player.load({
+          url: "2013AGM_V1_21_2_patched.swf",
+          autoplay: "on",
+          unmuteOverlay: "hidden",
+          letterbox: "off"
+        });
+
+        player.addEventListener("error", () => showFallback());
+      } catch (error) {
+        showFallback();
+      }
+    }
+
+    window.addEventListener("load", initFlash);
   </script>
 </body>
 </html>
